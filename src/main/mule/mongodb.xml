@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0e1ab860-6446-435d-9059-48851f42fd52" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<mongo:config name="MongoDB_Config" doc:name="MongoDB Config" doc:id="a2002634-769d-4859-bac9-2bd03ef4dded" >
+		<mongo:connection database="students" >
+			<mongo:server-addresses >
+				<mongo:server-address host="localhost" />
+			</mongo:server-addresses>
+		</mongo:connection>
+	</mongo:config>
+	<flow name="mongodbFlow" doc:id="928324b9-3963-483c-a061-a29ccb740db2" >
+		<http:listener doc:name="Listener" doc:id="2311c4c7-841b-464b-8f72-b61acb96642b" config-ref="HTTP_Listener_config" path="/exist"/>
+		<mongo:collection-exists collectionName="#[attributes.queryParams.collectionName]" doc:name="Collection exists" doc:id="4e629fcc-e476-40c2-9647-01da31a84223" config-ref="MongoDB_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="80903931-0a25-445b-881e-6283c1821a0a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mongodbFlow1" doc:id="3ec09b40-e200-467f-8916-fd39c7c2bb27" >
+		<http:listener doc:name="Listener" doc:id="25b0ab61-3921-4090-a74d-f8e277975553" config-ref="HTTP_Listener_config" path="/createcollection"/>
+		<mongo:create-collection doc:name="Create collection" doc:id="37535b81-17c7-47ae-963e-c83246914020" config-ref="MongoDB_Config" collectionName="#[attributes.queryParams.collectionName]"/>
+		<ee:transform doc:name="Transform Message" doc:id="b5d535fa-6524-4727-9666-9bc7f04167fa" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mongodbFlow2" doc:id="ed561699-6d4e-4e50-9b42-68f1491955ad" >
+		<http:listener doc:name="Listener" doc:id="cb8eb25a-719f-4b30-8db3-d7ef61b901ab" config-ref="HTTP_Listener_config" path="/insertdoc"/>
+		<mongo:insert-document collectionName="Qa" doc:name="Insert document" doc:id="a8d9507d-5683-4013-9ca0-1a6a480bf1f7" config-ref="MongoDB_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="21c238ed-4520-4478-b26a-161eabf430b3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mongodbFlow3" doc:id="d49b17e0-b471-4286-a4fd-8d3a22f2299d" >
+		<http:listener doc:name="Listener" doc:id="f2af86f2-1690-423c-9474-b4f8e4a763fc" config-ref="HTTP_Listener_config" path="/insertdocs"/>
+		<mongo:insert-documents doc:name="Insert documents" doc:id="e8d126bd-8fbb-4c1f-a842-b1e8c2dd3e94" config-ref="MongoDB_Config" collectionName="Qa"/>
+		<ee:transform doc:name="Transform Message" doc:id="45206ab7-57d0-4065-a278-f3e6e3b84899" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mongodbFlow4" doc:id="aed71485-e6f3-41af-a5a6-e8dd5f2aa8b3" >
+		<http:listener doc:name="Listener" doc:id="9cae5a3f-ad16-4d7c-ab4a-b1aa9a322513" config-ref="HTTP_Listener_config" path="/listcollection"/>
+		<mongo:list-collections doc:name="List collections" doc:id="c150deac-7872-44bf-ae07-19b42a47edce" config-ref="MongoDB_Config"/>
+		<ee:transform doc:name="Transform Message" doc:id="17942047-0158-40a4-8d31-7a8558c84e3a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mongodbFlow7" doc:id="c45b3245-b6c1-44a6-8010-7fa421592887" >
+		<http:listener doc:name="Listener" doc:id="08028476-ca42-49ac-bcdf-3881e2467537" config-ref="HTTP_Listener_config" path="/createfile"/>
+		<mongo:create-file doc:name="Create file" doc:id="be234099-a13d-49c8-9473-1ffaca17f861" config-ref="MongoDB_Config" filename="tarun">
+			<mongo:metadata ><![CDATA[#[payload]]]></mongo:metadata>
+		</mongo:create-file>
+		<ee:transform doc:name="Transform Message" doc:id="706a3246-e37b-461a-b69f-6bb0a78f6bd7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mongodbFlow8" doc:id="0a592ceb-daa8-4450-b834-2686e4ef6f54" >
+		<http:listener doc:name="Listener" doc:id="23419707-1be4-4e97-b982-028d16a4daee" config-ref="HTTP_Listener_config" path="/getfile"/>
+		<mongo:get-file-content doc:name="Get file content" doc:id="96179f4f-f4f3-4608-8ecf-291643e98016" config-ref="MongoDB_Config">
+			<mongo:file-id ><![CDATA[#[{
+files_id:"669f6d9489af7d6df093b0e1"
+
+}]]]></mongo:file-id>
+		</mongo:get-file-content>
+		<ee:transform doc:name="Transform Message" doc:id="6947cd1c-3e85-4692-8589-60adc44d8292" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mongodbFlow9" doc:id="b0ec6932-aabb-4449-aafa-17be2b10d1cc" >
+		<http:listener doc:name="Listener" doc:id="fa5948c4-bca6-4b83-884b-c64f77b93f7c" config-ref="HTTP_Listener_config" path="/dump"/>
+		<mongo:dump doc:name="Dump" doc:id="be171c9f-feca-4e24-93d1-65a6ce9f8a4c" config-ref="MongoDB_Config" outputDirectory="C:\Users\Tarun\Desktop\mongodb"/>
+		<ee:transform doc:name="Transform Message" doc:id="18bee4ad-5ae8-4475-ba3e-8df089ea4739" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mongodbFlow5" doc:id="28e66e96-eecc-4fdf-ad37-24b336a44b49" >
+		<http:listener doc:name="Listener" doc:id="477dcb8c-6250-4879-9291-5aa832d2746f" config-ref="HTTP_Listener_config" path="/removedocument"/>
+		<mongo:remove-documents doc:name="Remove documents" doc:id="c5b81ffe-42ab-47a4-a549-a75562c42fcb" config-ref="MongoDB_Config" collectionName="Qa">
+			<mongo:query ><![CDATA[#[payload]]]></mongo:query>
+		</mongo:remove-documents>
+		<ee:transform doc:name="Transform Message" doc:id="1537c245-0f7b-4484-a140-78c82a873eb6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="mongodbFlow6" doc:id="e52b5ed5-08c7-4a2c-8355-0eb682568791" >
+		<http:listener doc:name="Listener" doc:id="e8fde033-255c-4e1b-bc5a-55e68ecfb86b" config-ref="HTTP_Listener_config" path="/updatedoc"/>
+		<mongo:update-documents collectionName="Qa" doc:name="Update documents" doc:id="fe7af984-40c4-47a8-b4fa-cdd1795557cf" config-ref="MongoDB_Config" multipleUpdate="true">
+			<mongo:query ><![CDATA[#[output application/json
+---
+{
+	
+stdid:22
+}]]]></mongo:query>
+			<mongo:content-to-update ><![CDATA[#[output application/json
+---
+payload]]]></mongo:content-to-update>
+		</mongo:update-documents>
+		<ee:transform doc:name="Transform Message" doc:id="41cc542c-60e4-4bdf-836d-ce317483b97d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
